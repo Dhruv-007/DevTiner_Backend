@@ -6,7 +6,7 @@ const User = require("../models/user");
 
 const userRouter = express.Router();
 
-const SAVE_USER_DATA =  "firstName lastname skills age gender photoUrl"
+const SAVE_USER_DATA =  "firstName lastName age skills gender photoUrl about"
 // get pending connection api
 
 userRouter.get("/user/request/recieved", userAuth, async(req, res)=>{
@@ -20,7 +20,7 @@ userRouter.get("/user/request/recieved", userAuth, async(req, res)=>{
 
     await res.json({
         message:"Data fetched sucessfully",
-        connectionRequest
+        data:connectionRequest
     })
 
    } catch (error) {
@@ -39,7 +39,7 @@ userRouter.get("/user/request/recieved", userAuth, async(req, res)=>{
         {toUserId: loggedInUser._id, status:"accepted"},
         {fromUserId:loggedInUser._id, status:"accepted"}
        ]
-     }).populate("fromUserId", "firstName lastname skills age gender photoUrl").
+     }).populate("fromUserId", SAVE_USER_DATA).
      populate("toUserId", SAVE_USER_DATA)
 
      const data = connectionRequest.map((row) => {

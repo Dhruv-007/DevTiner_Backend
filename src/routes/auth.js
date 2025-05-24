@@ -19,17 +19,17 @@ authRouter.post('/signup',async (req,res)=>{
         const user = new User({
             firstName, lastName, emailId, password:passwordHash,gender, skills
         })
-        await user.save()
-        res.send(user,"User saved successfully")
+       const savedUser =   await user.save()
+        res.json({message:"Account Created Suucessfully", data:savedUser})
     } catch(error){
         res.status(400).send("Error: "+error.message)
     } 
 })
 // login user
 authRouter.post('/login', async (req,res)=>{
+    console.log("Login Successfull")
     try{
         const {emailId, password} = req.body
-       
         const user =  await User.findOne({emailId:emailId});
       
         if(!user){
@@ -37,14 +37,17 @@ authRouter.post('/login', async (req,res)=>{
         }
         const isPasswordCorrect = await user.validatePassword(password)
       
+        // if password is correct then create a toke
         if(isPasswordCorrect){
             // create a JWT token
            const token = await user.getJWT();
-           console.log(token,"token")
-
+        //    console.log(token,"token")
+         
             // Add Token to cookie and send response to user
             res.cookie("token", token)
-            res.send("Login Successfull")
+            res.send(user)
+       
+            // res.json({message:"Login Successfull",user})
         }else{
             throw new Error("Password is not correct.")
         }
@@ -57,7 +60,7 @@ authRouter.post('/login', async (req,res)=>{
         res.cookie("token", null ,{
         expires: new Date(Date.now())
         })
-        res.send("Logout sucessfully !!!!")
+       res.json({message:"Logout Sucessfully"})
     })
   
 
